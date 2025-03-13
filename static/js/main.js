@@ -132,6 +132,65 @@ const api = {
     // Backup
     async createBackup() {
         return await this.request('/api/backup', 'POST');
+    },
+    
+    // Genesys Cloud Integration
+    async checkGenesysStatus() {
+        return await this.request('/api/genesys/status');
+    },
+    
+    async getGenesysUsers(limit = 25, page = 1) {
+        return await this.request(`/api/genesys/users?limit=${limit}&page=${page}`);
+    },
+    
+    async getGenesysUser(userId) {
+        return await this.request(`/api/genesys/users/${userId}`);
+    },
+    
+    async getGenesysContacts(limit = 25, page = 1) {
+        return await this.request(`/api/genesys/contacts?limit=${limit}&page=${page}`);
+    },
+    
+    async getGenesysContact(contactId) {
+        return await this.request(`/api/genesys/contacts/${contactId}`);
+    },
+    
+    async createGenesysContact(data) {
+        return await this.request('/api/genesys/contacts', 'POST', data);
+    },
+    
+    async updateGenesysContact(contactId, data) {
+        return await this.request(`/api/genesys/contacts/${contactId}`, 'PUT', data);
+    },
+    
+    async importGenesysContact(contactId) {
+        return await this.request(`/api/genesys/import/contact/${contactId}`, 'POST');
+    },
+    
+    async importAllGenesysContacts(limit = 100) {
+        return await this.request(`/api/genesys/import/contacts?limit=${limit}`, 'POST');
+    },
+    
+    async syncContactsToGenesys() {
+        return await this.request('/api/genesys/sync/contacts', 'POST');
+    },
+    
+    async getGenesysInteractions(limit = 25, page = 1) {
+        return await this.request(`/api/genesys/interactions?limit=${limit}&page=${page}`);
+    },
+    
+    async getGenesysInteraction(interactionId) {
+        return await this.request(`/api/genesys/interactions/${interactionId}`);
+    },
+    
+    async recordGenesysInteraction(interactionId, customerId) {
+        return await this.request(`/api/genesys/interactions/${interactionId}/record`, 'POST', {
+            customer_id: customerId
+        });
+    },
+    
+    async getGenesysQueues(limit = 25, page = 1) {
+        return await this.request(`/api/genesys/queues?limit=${limit}&page=${page}`);
     }
 };
 

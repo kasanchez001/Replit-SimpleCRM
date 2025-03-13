@@ -454,6 +454,33 @@
             <strong>Note:</strong> These endpoints require Genesys Cloud credentials (GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET, and GENESYS_REGION) to be set as environment variables.
         </div>
         
+        <div class="card mb-4 bg-light">
+            <div class="card-header">
+                <h4>New Bidirectional Integration Endpoints</h4>
+            </div>
+            <div class="card-body">
+                <p>These new endpoints enable more advanced integration between your CRM and Genesys Cloud:</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-transparent">
+                        <span class="badge bg-warning text-dark">PUT</span> 
+                        <code>/api/genesys/contacts/{contact_id}</code> - Update a contact in Genesys Cloud
+                    </li>
+                    <li class="list-group-item bg-transparent">
+                        <span class="badge bg-success text-white">POST</span> 
+                        <code>/api/genesys/import/contact/{contact_id}</code> - Import a specific contact from Genesys to CRM
+                    </li>
+                    <li class="list-group-item bg-transparent">
+                        <span class="badge bg-success text-white">POST</span> 
+                        <code>/api/genesys/import/contacts</code> - Import all contacts from Genesys to CRM
+                    </li>
+                    <li class="list-group-item bg-transparent">
+                        <span class="badge bg-success text-white">POST</span> 
+                        <code>/api/genesys/interactions/{interaction_id}/record</code> - Record a Genesys interaction in CRM
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <div class="d-flex justify-content-between align-items-center">
