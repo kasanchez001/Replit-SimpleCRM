@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "id": "35ee0481-8d85-4db4-a5ab-6b0895a46243",
+    "username": "Test",
+    "password": "scrypt:32768:8:1$VDz3KRbKKbx9RtlT$073354c390f7947d933a7b9a9f5056605638666e849b6659f9137bf11fdeaca020a6248b72ddf028f805984034a18e0fc92ed0b42711158f0e72ba90f9ddabac",
+    "created_at": "2025-03-13T01:04:24.583422"
+  }
+]
