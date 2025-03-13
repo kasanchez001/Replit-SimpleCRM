@@ -447,6 +447,286 @@
 }</code></pre>
             </div>
         </div>
+        
+        <h2 class="mt-5">Genesys Cloud Integration</h2>
+        <p class="lead">The following endpoints provide integration with Genesys Cloud contact center services.</p>
+        <div class="alert alert-info">
+            <strong>Note:</strong> These endpoints require Genesys Cloud credentials (GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET, and GENESYS_REGION) to be set as environment variables.
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">GET /api/genesys/status</span>
+                    <span class="badge bg-light text-dark">GET</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p>Check if Genesys Cloud integration is configured.</p>
+                <h5>Response</h5>
+                <pre><code>{
+    "status": "configured"
+}
+
+// OR
+
+{
+    "status": "not_configured",
+    "message": "Genesys Cloud credentials are not set. Please configure the GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET, and GENESYS_REGION environment variables."
+}</code></pre>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">GET /api/genesys/users</span>
+                    <span class="badge bg-light text-dark">GET</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p>Get users from Genesys Cloud.</p>
+                <h5>Query Parameters</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>limit</td>
+                            <td>Optional. Maximum number of results to return (default: 25).</td>
+                        </tr>
+                        <tr>
+                            <td>page</td>
+                            <td>Optional. Page number for paginated results (default: 1).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">GET /api/genesys/users/{user_id}</span>
+                    <span class="badge bg-light text-dark">GET</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p>Get a specific user from Genesys Cloud.</p>
+                <h5>Parameters</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>user_id</td>
+                            <td>Required. The ID of the Genesys Cloud user to retrieve.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">GET /api/genesys/contacts</span>
+                    <span class="badge bg-light text-dark">GET</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p>Get contacts from Genesys Cloud.</p>
+                <h5>Query Parameters</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>limit</td>
+                            <td>Optional. Maximum number of results to return (default: 25).</td>
+                        </tr>
+                        <tr>
+                            <td>page</td>
+                            <td>Optional. Page number for paginated results (default: 1).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">GET /api/genesys/contacts/{contact_id}</span>
+                    <span class="badge bg-light text-dark">GET</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p>Get a specific contact from Genesys Cloud.</p>
+                <h5>Parameters</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>contact_id</td>
+                            <td>Required. The ID of the Genesys Cloud contact to retrieve.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">POST /api/genesys/contacts</span>
+                    <span class="badge bg-light text-dark">POST</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p>Create a new contact in Genesys Cloud.</p>
+                <h5>Request Body</h5>
+                <pre><code>{
+    "firstName": "John",
+    "lastName": "Doe",
+    "emails": [
+        {
+            "address": "john.doe@example.com"
+        }
+    ],
+    "phoneNumbers": [
+        {
+            "number": "555-1234"
+        }
+    ]
+}</code></pre>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">GET /api/genesys/interactions</span>
+                    <span class="badge bg-light text-dark">GET</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p>Get interactions/conversations from Genesys Cloud.</p>
+                <h5>Query Parameters</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>limit</td>
+                            <td>Optional. Maximum number of results to return (default: 25).</td>
+                        </tr>
+                        <tr>
+                            <td>page</td>
+                            <td>Optional. Page number for paginated results (default: 1).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">GET /api/genesys/interactions/{interaction_id}</span>
+                    <span class="badge bg-light text-dark">GET</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p>Get details of a specific interaction from Genesys Cloud.</p>
+                <h5>Parameters</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>interaction_id</td>
+                            <td>Required. The ID of the Genesys Cloud interaction to retrieve.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">GET /api/genesys/queues</span>
+                    <span class="badge bg-light text-dark">GET</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p>Get queues from Genesys Cloud.</p>
+                <h5>Query Parameters</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>limit</td>
+                            <td>Optional. Maximum number of results to return (default: 25).</td>
+                        </tr>
+                        <tr>
+                            <td>page</td>
+                            <td>Optional. Page number for paginated results (default: 1).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">POST /api/genesys/sync/contacts</span>
+                    <span class="badge bg-light text-dark">POST</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p>Sync contacts between CRM and Genesys Cloud. This endpoint takes all contacts from the CRM system and creates them in Genesys Cloud.</p>
+                <h5>Response</h5>
+                <pre><code>{
+    "message": "Synced 25 contacts to Genesys Cloud",
+    "results": [
+        // Array of created contacts in Genesys Cloud
+    ]
+}</code></pre>
+            </div>
+        </div>
     </div>
 
     <div class="container mt-5 mb-5">
