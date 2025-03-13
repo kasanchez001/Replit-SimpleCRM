@@ -494,6 +494,135 @@ def api_genesys_sync_contacts():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Update a contact in Genesys Cloud
+@app.route('/api/genesys/contacts/<contact_id>', methods=['PUT'])
+@auth.login_required
+def api_genesys_update_contact(contact_id):
+    """Update a contact in Genesys Cloud"""
+    genesys = GenesysCloudIntegration()
+    data = request.json
+    
+    if not data:
+        return jsonify({"error": "Invalid data"}), 400
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        result = genesys.update_contact(contact_id, data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Import a contact from Genesys to CRM
+@app.route('/api/genesys/import/contact/<contact_id>', methods=['POST'])
+@auth.login_required
+def api_genesys_import_contact(contact_id):
+    """Import a specific contact from Genesys Cloud to CRM"""
+    genesys = GenesysCloudIntegration()
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        # Get contact from Genesys
+        genesys_contact = genesys.get_contact(contact_id)
+        
+        if 'error' in genesys_contact:
+            return jsonify({"error": f"Failed to retrieve contact from Genesys: {genesys_contact['error']}"}), 400
+        
+        # Convert to CRM format
+        crm_contact = {
+            "name": f"{genesys_contact.get('firstName', '')} {genesys_contact.get('lastName', '')}".strip(),
+            "email": next((email.get('address') for email in genesys_contact.get('emails', []) if 'address' in email), ""),
+            "phone": next((phone.get('number') for phone in genesys_contact.get('phoneNumbers', []) if 'number' in phone), ""),
+            "notes": f"Imported from Genesys Cloud. Contact ID: {contact_id}",
+            "genesys_id": contact_id
+        }
+        
+        # Add to CRM
+        new_contact = create_contact(crm_contact)
+        return jsonify({"message": "Contact imported successfully", "contact": new_contact}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Import all contacts from Genesys to CRM
+@app.route('/api/genesys/import/contacts', methods=['POST'])
+@auth.login_required
+def api_genesys_import_all_contacts():
+    """Import all contacts from Genesys Cloud to CRM"""
+    genesys = GenesysCloudIntegration()
+    limit = request.args.get('limit', 100, type=int)
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        # Get contacts from Genesys
+        genesys_contacts = genesys.get_contacts(limit=limit)
+        
+        if 'error' in genesys_contacts:
+            return jsonify({"error": f"Failed to retrieve contacts from Genesys: {genesys_contacts['error']}"}), 400
+        
+        imported_contacts = []
+        
+        # Loop through each contact
+        for genesys_contact in genesys_contacts.get('entities', []):
+            # Convert to CRM format
+            crm_contact = {
+                "name": f"{genesys_contact.get('firstName', '')} {genesys_contact.get('lastName', '')}".strip(),
+                "email": next((email.get('address') for email in genesys_contact.get('emails', []) if 'address' in email), ""),
+                "phone": next((phone.get('number') for phone in genesys_contact.get('phoneNumbers', []) if 'number' in phone), ""),
+                "notes": f"Imported from Genesys Cloud. Contact ID: {genesys_contact.get('id')}",
+                "genesys_id": genesys_contact.get('id')
+            }
+            
+            # Add to CRM
+            new_contact = create_contact(crm_contact)
+            imported_contacts.append(new_contact)
+        
+        return jsonify({
+            "message": f"Successfully imported {len(imported_contacts)} contacts",
+            "contacts": imported_contacts
+        }), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Create/update interaction record in CRM based on Genesys interaction
+@app.route('/api/genesys/interactions/<interaction_id>/record', methods=['POST'])
+@auth.login_required
+def api_genesys_record_interaction(interaction_id):
+    """Record a Genesys interaction in the CRM as a deal or note"""
+    genesys = GenesysCloudIntegration()
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        # Get interaction details from Genesys
+        interaction = genesys.get_interaction(interaction_id)
+        
+        if 'error' in interaction:
+            return jsonify({"error": f"Failed to retrieve interaction: {interaction['error']}"}), 400
+        
+        # Get customer info if available
+        customer_id = request.json.get('customer_id')
+        
+        # Create a deal record from this interaction
+        deal_data = {
+            "title": f"Interaction {interaction_id}",
+            "description": f"Call recorded on {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+            "status": "New",
+            "value": 0,
+            "customer_id": customer_id,
+            "genesys_interaction_id": interaction_id
+        }
+        
+        new_deal = create_deal(deal_data)
+        return jsonify({"message": "Interaction recorded as deal", "deal": new_deal}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Error handlers
 @app.errorhandler(404)
 def page_not_found(e):
