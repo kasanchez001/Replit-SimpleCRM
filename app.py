@@ -11,6 +11,7 @@ from data_manager import (
     get_all_deals, get_deal, create_deal, update_deal, delete_deal,
     search_customers, search_contacts, search_deals, backup_data
 )
+from genesys_integration import GenesysCloudIntegration
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -310,6 +311,186 @@ def api_backup():
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         backup_data(timestamp)
         return jsonify({"message": f"Backup created successfully with timestamp {timestamp}"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Genesys Cloud Integration Routes
+@app.route('/api/genesys/status', methods=['GET'])
+@auth.login_required
+def api_genesys_status():
+    """Check if Genesys Cloud integration is configured"""
+    genesys = GenesysCloudIntegration()
+    if genesys.is_configured():
+        return jsonify({"status": "configured"})
+    else:
+        return jsonify({"status": "not_configured", 
+                       "message": "Genesys Cloud credentials are not set. Please configure the GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET, and GENESYS_REGION environment variables."})
+
+@app.route('/api/genesys/users', methods=['GET'])
+@auth.login_required
+def api_genesys_users():
+    """Get Genesys Cloud users"""
+    genesys = GenesysCloudIntegration()
+    limit = request.args.get('limit', 25, type=int)
+    page = request.args.get('page', 1, type=int)
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        result = genesys.get_users(limit=limit, page_number=page)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/genesys/users/<user_id>', methods=['GET'])
+@auth.login_required
+def api_genesys_user(user_id):
+    """Get a specific Genesys Cloud user"""
+    genesys = GenesysCloudIntegration()
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        result = genesys.get_user(user_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/genesys/contacts', methods=['GET'])
+@auth.login_required
+def api_genesys_contacts():
+    """Get Genesys Cloud contacts"""
+    genesys = GenesysCloudIntegration()
+    limit = request.args.get('limit', 25, type=int)
+    page = request.args.get('page', 1, type=int)
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        result = genesys.get_contacts(limit=limit, page_number=page)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/genesys/contacts/<contact_id>', methods=['GET'])
+@auth.login_required
+def api_genesys_contact(contact_id):
+    """Get a specific Genesys Cloud contact"""
+    genesys = GenesysCloudIntegration()
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        result = genesys.get_contact(contact_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/genesys/contacts', methods=['POST'])
+@auth.login_required
+def api_genesys_add_contact():
+    """Create a new contact in Genesys Cloud"""
+    genesys = GenesysCloudIntegration()
+    data = request.json
+    
+    if not data:
+        return jsonify({"error": "Invalid data"}), 400
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        result = genesys.create_contact(data)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/genesys/interactions', methods=['GET'])
+@auth.login_required
+def api_genesys_interactions():
+    """Get Genesys Cloud interactions"""
+    genesys = GenesysCloudIntegration()
+    limit = request.args.get('limit', 25, type=int)
+    page = request.args.get('page', 1, type=int)
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        result = genesys.get_interactions(limit=limit, page_number=page)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/genesys/interactions/<interaction_id>', methods=['GET'])
+@auth.login_required
+def api_genesys_interaction(interaction_id):
+    """Get a specific Genesys Cloud interaction"""
+    genesys = GenesysCloudIntegration()
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        result = genesys.get_interaction(interaction_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/genesys/queues', methods=['GET'])
+@auth.login_required
+def api_genesys_queues():
+    """Get Genesys Cloud queues"""
+    genesys = GenesysCloudIntegration()
+    limit = request.args.get('limit', 25, type=int)
+    page = request.args.get('page', 1, type=int)
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        result = genesys.get_queues(limit=limit, page_number=page)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Sync contacts between CRM and Genesys
+@app.route('/api/genesys/sync/contacts', methods=['POST'])
+@auth.login_required
+def api_genesys_sync_contacts():
+    """Sync contacts between CRM and Genesys Cloud"""
+    genesys = GenesysCloudIntegration()
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        # Get all CRM contacts
+        crm_contacts = get_all_contacts()
+        
+        # Convert CRM contacts to Genesys format
+        genesys_contacts = []
+        for contact in crm_contacts:
+            genesys_contact = {
+                "firstName": contact.get("name", "").split()[0] if contact.get("name") else "",
+                "lastName": " ".join(contact.get("name", "").split()[1:]) if contact.get("name") and len(contact.get("name", "").split()) > 1 else "",
+                "emails": [{"address": contact.get("email")}] if contact.get("email") else [],
+                "phoneNumbers": [{"number": contact.get("phone")}] if contact.get("phone") else [],
+                "externalIds": [{"id": contact.get("id")}]
+            }
+            genesys_contacts.append(genesys_contact)
+        
+        # Create contacts in Genesys Cloud
+        results = []
+        for contact in genesys_contacts:
+            result = genesys.create_contact(contact)
+            results.append(result)
+        
+        return jsonify({"message": f"Synced {len(results)} contacts to Genesys Cloud", "results": results})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
