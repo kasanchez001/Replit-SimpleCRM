@@ -623,6 +623,131 @@ def api_genesys_record_interaction(interaction_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Screen Pop functionality for Genesys Cloud integration
+@app.route('/api/genesys/screen-pop/lookup', methods=['POST'])
+@auth.login_required
+def api_genesys_screen_pop_lookup():
+    """
+    Screen Pop lookup endpoint - searches for a customer by phone number
+    
+    This endpoint is called when an inbound call is received in Genesys Cloud.
+    It searches for a customer by phone number and returns the customer details
+    if found. If no customer is found, it returns a 404 response.
+    """
+    genesys = GenesysCloudIntegration()
+    data = request.json
+    
+    if not data or 'phone_number' not in data:
+        return jsonify({"error": "Phone number is required"}), 400
+    
+    phone_number = data.get('phone_number')
+    
+    try:
+        # Import the find_customer_by_phone function
+        from data_manager import find_customer_by_phone
+        
+        # Look up customer by phone number
+        customer = find_customer_by_phone(phone_number)
+        
+        if customer:
+            # If customer found, return customer details
+            return jsonify({
+                "found": True,
+                "customer": customer,
+                "message": "Customer found"
+            })
+        else:
+            # If no customer found, return not found status
+            return jsonify({
+                "found": False,
+                "message": "No customer found with this phone number"
+            }), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/genesys/screen-pop/create-script', methods=['POST'])
+@auth.login_required
+def api_genesys_create_screen_pop_script():
+    """
+    Create a screen pop script for Genesys Cloud
+    
+    This endpoint creates an agent script in Genesys Cloud that can be used
+    to display customer information or collect new customer information.
+    """
+    genesys = GenesysCloudIntegration()
+    data = request.json
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        customer_id = data.get('customer_id')
+        result = genesys.create_customer_screen_pop_script(customer_id)
+        
+        return jsonify({
+            "message": "Screen pop script created successfully",
+            "script": result
+        }), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/genesys/screen-pop/setup', methods=['POST'])
+@auth.login_required
+def api_genesys_setup_screen_pop():
+    """
+    Set up screen pop functionality in Genesys Cloud
+    
+    This endpoint configures the notification subscription for
+    real-time call events in Genesys Cloud.
+    """
+    genesys = GenesysCloudIntegration()
+    
+    if not genesys.is_configured():
+        return jsonify({"error": "Genesys Cloud integration not configured"}), 400
+    
+    try:
+        # Set up notification channel for screen pop
+        result = genesys.setup_screen_pop()
+        
+        return jsonify({
+            "message": "Screen pop functionality configured successfully",
+            "status": result
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/genesys/quick-add-customer', methods=['POST'])
+@auth.login_required
+def api_genesys_quick_add_customer():
+    """
+    Quickly add a new customer from Genesys Cloud
+    
+    This endpoint is designed to be called from a Genesys Cloud
+    agent script to add a new customer to the CRM during a call.
+    """
+    data = request.json
+    
+    if not data:
+        return jsonify({"error": "Customer data is required"}), 400
+    
+    # Ensure minimum required fields
+    required_fields = ['name', 'phone']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Field '{field}' is required"}), 400
+    
+    try:
+        # Create the customer in the CRM
+        new_customer = create_customer(data)
+        
+        # Return success response with the new customer data
+        return jsonify({
+            "message": "Customer created successfully",
+            "customer": new_customer
+        }), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Error handlers
 @app.errorhandler(404)
 def page_not_found(e):
