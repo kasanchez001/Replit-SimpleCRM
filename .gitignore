@@ -24,30 +24,22 @@ var/
 venv/
 ENV/
 
-# IDE files
+# IDE
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# Local data (optional)
-# Uncomment if you don't want to include test data
-# data/users.json
-# data/customers.json
-# data/contacts.json
-# data/deals.json
-data/backup/*
-!data/backup/.gitkeep
+# Logs
+*.log
+
+# Local configuration
+.env
+.env.local
+.env.*.local
 
 # Replit specific
 .replit
-.breakpoints
+replit.nix
 .upm/
 .config/
-.replit_auth
-replit.nix
-pyproject.toml
-
-# System files
-.DS_Store
-Thumbs.db
