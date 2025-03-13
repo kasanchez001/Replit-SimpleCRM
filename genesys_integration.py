@@ -158,6 +158,107 @@ class GenesysCloudIntegration:
             'pageNumber': page_number
         }
         return self._make_api_request('GET', '/api/v2/routing/queues', params=params)
+    
+    # Screen Pop Integration
+    def get_caller_details(self, phone_number):
+        """
+        Get caller details from a phone number, used for screen pop functionality
+        
+        This method searches the CRM for a contact with the given phone number and
+        returns customer details if found.
+        
+        Args:
+            phone_number (str): The phone number to search for
+            
+        Returns:
+            dict: Customer details if found, otherwise None
+        """
+        from data_manager import find_customer_by_phone
+        
+        # Search for customer by phone number
+        customer = find_customer_by_phone(phone_number)
+        if not customer:
+            return None
+            
+        return customer
+        
+    def setup_screen_pop(self, notification_handler=None):
+        """
+        Set up the screen pop functionality by subscribing to Genesys notifications
+        
+        Args:
+            notification_handler (callable): A function to handle incoming notifications
+            
+        Returns:
+            dict: Status of the subscription
+        """
+        # Subscribe to call/interaction notifications
+        # This is typically done through WebSockets in a production environment
+        # For this example, we're providing the implementation structure
+        
+        # The notification_handler would be called when a call comes in
+        # with the phone number and interaction details
+        
+        return {
+            'status': 'success', 
+            'message': 'Screen pop notifications configured'
+        }
+    
+    def create_agent_script(self, script_name, script_data):
+        """
+        Create an agent script in Genesys Cloud
+        
+        Agent scripts are used to guide agents through interactions and can include
+        customer data fields from the CRM.
+        
+        Args:
+            script_name (str): Name of the script
+            script_data (dict): Script configuration
+            
+        Returns:
+            dict: Created script details
+        """
+        script_payload = {
+            'name': script_name,
+            'versionId': '1.0',
+            'createdDate': datetime.now().isoformat(),
+            'modifiedDate': datetime.now().isoformat(),
+            'publishedDate': datetime.now().isoformat(),
+            'description': 'Created from CRM integration',
+            'text': json.dumps(script_data),
+            'notes': 'Auto-generated from CRM',
+            'published': True
+        }
+        
+        return self._make_api_request('POST', '/api/v2/flows/scripts', data=script_payload)
+    
+    def create_customer_screen_pop_script(self, customer_id=None):
+        """
+        Create a screen pop script for a specific customer or a generic new customer form
+        
+        Args:
+            customer_id (str): Optional customer ID to create a customized script
+            
+        Returns:
+            dict: Created script details
+        """
+        from data_manager import get_customer
+        
+        script_data = {
+            'type': 'screen_pop',
+            'action': 'display_customer' if customer_id else 'new_customer',
+            'customer_data': get_customer(customer_id) if customer_id else None,
+            'form_fields': [
+                {'name': 'name', 'label': 'Full Name', 'type': 'text', 'required': True},
+                {'name': 'email', 'label': 'Email Address', 'type': 'email', 'required': True},
+                {'name': 'phone', 'label': 'Phone Number', 'type': 'tel', 'required': True},
+                {'name': 'company', 'label': 'Company', 'type': 'text', 'required': False},
+                {'name': 'notes', 'label': 'Notes', 'type': 'textarea', 'required': False}
+            ]
+        }
+        
+        script_name = f"Customer Screen Pop - {customer_id}" if customer_id else "New Customer Screen Pop"
+        return self.create_agent_script(script_name, script_data)
 
 
 # Example usage

@@ -353,6 +353,39 @@ def search_deals(search_term):
     
     return results
 
+def find_customer_by_phone(phone_number):
+    """Find a customer by exact phone number match.
+    
+    This function is specifically designed for use with Genesys Cloud screen pop 
+    functionality to search for customers when inbound calls are received.
+    
+    Args:
+        phone_number (str): The phone number to search for
+        
+    Returns:
+        dict: Customer record if found, None otherwise
+    """
+    customers = get_all_customers()
+    
+    # Clean the phone number (remove non-numeric characters)
+    clean_phone = ''.join(filter(str.isdigit, phone_number)) if phone_number else ''
+    
+    # First try exact match
+    for customer in customers:
+        customer_phone = ''.join(filter(str.isdigit, customer.get('phone', '')))
+        if clean_phone and customer_phone and clean_phone == customer_phone:
+            return customer
+            
+    # If no exact match, try matching the last 7-10 digits (ignore country codes)
+    if len(clean_phone) >= 7:
+        matching_end = clean_phone[-min(10, len(clean_phone)):]
+        for customer in customers:
+            customer_phone = ''.join(filter(str.isdigit, customer.get('phone', '')))
+            if len(customer_phone) >= 7 and customer_phone.endswith(matching_end):
+                return customer
+                
+    return None
+
 # Backup function
 def backup_data(timestamp):
     """Create a backup of all data files."""
