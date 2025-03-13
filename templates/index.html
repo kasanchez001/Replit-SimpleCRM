@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple CRM</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Simple CRM</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" id="nav-customers">Customers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="nav-contacts">Contacts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="nav-deals">Deals</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('api_docs') }}">API Docs</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <button class="btn btn-outline-info me-2" id="btn-backup">Backup Data</button>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col">
+                <div id="alert-container"></div>
+            </div>
+        </div>
+
+        <!-- Customers Section -->
+        <div id="customers-section" class="content-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Customers</h2>
+                <div class="d-flex">
+                    <input type="text" class="form-control me-2" id="customer-search" placeholder="Search customers...">
+                    <button class="btn btn-primary" id="btn-add-customer">Add Customer</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Industry</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customers-table-body">
+                                <!-- Customers will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacts Section -->
+        <div id="contacts-section" class="content-section d-none">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Contacts</h2>
+                <div class="d-flex">
+                    <select class="form-select me-2" id="contact-customer-filter">
+                        <option value="">All Customers</option>
+                        <!-- Customer options will be loaded here -->
+                    </select>
+                    <input type="text" class="form-control me-2" id="contact-search" placeholder="Search contacts...">
+                    <button class="btn btn-primary" id="btn-add-contact">Add Contact</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Position</th>
+                                    <th>Customer</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contacts-table-body">
+                                <!-- Contacts will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deals Section -->
+        <div id="deals-section" class="content-section d-none">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Deals</h2>
+                <div class="d-flex">
+                    <select class="form-select me-2" id="deal-customer-filter">
+                        <option value="">All Customers</option>
+                        <!-- Customer options will be loaded here -->
+                    </select>
+                    <select class="form-select me-2" id="deal-status-filter">
+                        <option value="">All Statuses</option>
+                        <option value="New">New</option>
+                        <option value="Qualified">Qualified</option>
+                        <option value="Proposal">Proposal</option>
+                        <option value="Negotiation">Negotiation</option>
+                        <option value="Closed Won">Closed Won</option>
+                        <option value="Closed Lost">Closed Lost</option>
+                    </select>
+                    <input type="text" class="form-control me-2" id="deal-search" placeholder="Search deals...">
+                    <button class="btn btn-primary" id="btn-add-deal">Add Deal</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Expected Close</th>
+                                    <th>Customer</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deals-table-body">
+                                <!-- Deals will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Modal -->
+    <div class="modal fade" id="customer-modal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="customerModalLabel">Add Customer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="customer-form">
+                        <input type="hidden" id="customer-id">
+                        <div class="mb-3">
+                            <label for="customer-name" class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="customer-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer-email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="customer-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer-phone" class="form-label">Phone *</label>
+                            <input type="tel" class="form-control" id="customer-phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer-address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="customer-address">
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer-website" class="form-label">Website</label>
+                            <input type="url" class="form-control" id="customer-website">
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer-industry" class="form-label">Industry</label>
+                            <input type="text" class="form-control" id="customer-industry">
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer-notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="customer-notes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger d-none" id="btn-delete-customer">Delete</button>
+                    <button type="button" class="btn btn-primary" id="btn-save-customer">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="modal fade" id="contact-modal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactModalLabel">Add Contact</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="contact-form">
+                        <input type="hidden" id="contact-id">
+                        <div class="mb-3">
+                            <label for="contact-customer" class="form-label">Customer *</label>
+                            <select class="form-select" id="contact-customer" required>
+                                <option value="">Select Customer</option>
+                                <!-- Customer options will be loaded here -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact-name" class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="contact-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact-email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="contact-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact-phone" class="form-label">Phone *</label>
+                            <input type="tel" class="form-control" id="contact-phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact-position" class="form-label">Position</label>
+                            <input type="text" class="form-control" id="contact-position">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact-notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="contact-notes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger d-none" id="btn-delete-contact">Delete</button>
+                    <button type="button" class="btn btn-primary" id="btn-save-contact">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deal Modal -->
+    <div class="modal fade" id="deal-modal" tabindex="-1" aria-labelledby="dealModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dealModalLabel">Add Deal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="deal-form">
+                        <input type="hidden" id="deal-id">
+                        <div class="mb-3">
+                            <label for="deal-customer" class="form-label">Customer *</label>
+                            <select class="form-select" id="deal-customer" required>
+                                <option value="">Select Customer</option>
+                                <!-- Customer options will be loaded here -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deal-title" class="form-label">Title *</label>
+                            <input type="text" class="form-control" id="deal-title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deal-amount" class="form-label">Amount *</label>
+                            <input type="number" step="0.01" class="form-control" id="deal-amount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deal-status" class="form-label">Status *</label>
+                            <select class="form-select" id="deal-status" required>
+                                <option value="New">New</option>
+                                <option value="Qualified">Qualified</option>
+                                <option value="Proposal">Proposal</option>
+                                <option value="Negotiation">Negotiation</option>
+                                <option value="Closed Won">Closed Won</option>
+                                <option value="Closed Lost">Closed Lost</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deal-close-date" class="form-label">Expected Close Date</label>
+                            <input type="date" class="form-control" id="deal-close-date">
+                        </div>
+                        <div class="mb-3">
+                            <label for="deal-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="deal-description" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger d-none" id="btn-delete-deal">Delete</button>
+                    <button type="button" class="btn btn-primary" id="btn-save-deal">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirm-modal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm-message">Are you sure you want to proceed?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirm-action">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/customers.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/contacts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/deals.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+/* Custom Styles */
+body {
+    min-height: 100vh;
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+}
+
+.card {
+    background-color: var(--bs-dark-bg-subtle);
+    border: 1px solid var(--bs-dark-border-subtle);
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+/* Status Badges */
+.badge-new {
+    background-color: var(--bs-info);
+    color: var(--bs-dark);
+}
+
+.badge-qualified {
+    background-color: var(--bs-primary);
+    color: var(--bs-light);
+}
+
+.badge-proposal {
+    background-color: var(--bs-warning);
+    color: var(--bs-dark);
+}
+
+.badge-negotiation {
+    background-color: var(--bs-secondary);
+    color: var(--bs-light);
+}
+
+.badge-closed-won {
+    background-color: var(--bs-success);
+    color: var(--bs-light);
+}
+
+.badge-closed-lost {
+    background-color: var(--bs-danger);
+    color: var(--bs-light);
+}
+
+/* Responsive tables */
+@media (max-width: 767px) {
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+    }
+}
+
+/* Action buttons */
+.btn-action {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Pointer cursor for clickable rows */
+.clickable-row {
+    cursor: pointer;
+}
+
+/* Subtle hover effect on rows */
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Custom modal styling */
+.modal-content {
+    background-color: var(--bs-dark-bg-subtle);
+    border: 1px solid var(--bs-dark-border-subtle);
+}
+
+.modal-header {
+    border-bottom-color: var(--bs-dark-border-subtle);
+}
+
+.modal-footer {
+    border-top-color: var(--bs-dark-border-subtle);
+}
